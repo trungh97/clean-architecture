@@ -5,6 +5,5 @@ import (
 )
 
 type UserHandler interface {
-	Sample(c echo.Context) error
 	Login(c echo.Context) error
 }

@@ -7,10 +7,6 @@ type baseResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
 func response(c echo.Context, responseCode int, message string, data interface{}) error {
 	return c.JSON(responseCode, &baseResponse{
 		Message: message,
