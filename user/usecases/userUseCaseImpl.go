@@ -5,9 +5,11 @@ import (
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"golang.org/x/crypto/bcrypt"
 	"instagram-clone.com/m/config"
+	"instagram-clone.com/m/user/entities"
 	"instagram-clone.com/m/user/repositories"
 )
 
@@ -59,4 +61,32 @@ func generateToken(email string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func (u *userUsecaseImpl) Register(email, password string) (string, error) {
+	if u.userRepository.IsDuplicatedEmail(email) {
+		return "", errors.New("email already exists")
+	}
+
+	uid := uuid.New().String()
+
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("failed to hash password: %v", err)
+		return "", errors.New("internal server error")
+	}
+
+	var data = entities.User{
+		ID:       uid,
+		Email:    email,
+		Password: string(hashedPassword),
+	}
+
+	user, err := u.userRepository.CreateNewUser(&data)
+	if err != nil {
+		log.Errorf("failed to create user: %v", err)
+		return "", errors.New("internal server error")
+	}
+	return user.ID, nil
 }

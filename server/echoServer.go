@@ -54,7 +54,8 @@ func (s *echoServer) initializeUserHttpHandler() {
 	userHttpHandler := userHandlers.NewUserHttpHandler(userUseCase)
 
 	// Router
-	userRouters := s.app.Group("/v1/auth")
+	authRouters := s.app.Group("/v1/auth")
 
-	userRouters.POST("/login", userHttpHandler.Login)
+	authRouters.POST("/login", userHttpHandler.Login)
+	authRouters.POST("/register", userHttpHandler.Register)
 }
