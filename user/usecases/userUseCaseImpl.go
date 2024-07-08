@@ -63,7 +63,7 @@ func generateToken(email string) (string, error) {
 	return tokenString, nil
 }
 
-func (u *userUsecaseImpl) Register(email, password string) (string, error) {
+func (u *userUsecaseImpl) Register(email, username, password string) (string, error) {
 	if u.userRepository.IsDuplicatedEmail(email) {
 		return "", errors.New("email already exists")
 	}
@@ -80,6 +80,7 @@ func (u *userUsecaseImpl) Register(email, password string) (string, error) {
 	var data = entities.User{
 		ID:       uid,
 		Email:    email,
+		Username: username,
 		Password: string(hashedPassword),
 	}
 

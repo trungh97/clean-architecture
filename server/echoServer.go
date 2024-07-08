@@ -7,6 +7,7 @@ import (
 	userRepositories "instagram-clone.com/m/user/repositories"
 	userUseCases "instagram-clone.com/m/user/usecases"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -20,9 +21,24 @@ type echoServer struct {
 	conf *config.Config
 }
 
+type (
+	CustomValidator struct {
+		validator *validator.Validate
+	}
+)
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	if err := cv.validator.Struct(i); err != nil {
+		// Optionally, you could return the error to give each route more control over the status code
+		return err
+	}
+	return nil
+}
+
 func NewEchoServer(conf *config.Config, db database.Database) *echoServer {
 	echoApp := echo.New()
 	echoApp.Logger.SetLevel(log.DEBUG)
+	echoApp.Validator = &CustomValidator{validator: validator.New()}
 
 	return &echoServer{
 		app:  echoApp,
