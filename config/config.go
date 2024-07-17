@@ -3,6 +3,7 @@ package config
 import (
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -12,10 +13,20 @@ type (
 		Server   Server
 		Database Database
 		JWT      JWT
+		Redis    Redis
+		Session  Session
+		Cookie   Cookie
+		Logger   Logger
 	}
 
 	Server struct {
-		Port int
+		Port         string
+		Mode         string
+		CSRF         bool
+		ReadTimeout  time.Duration
+		WriteTimeout time.Duration
+		PprofPort    string
+		AppVersion   string
 	}
 
 	Database struct {
@@ -28,6 +39,34 @@ type (
 
 	JWT struct {
 		Secret string
+	}
+
+	Redis struct {
+		Host     string
+		Port     int
+		Password string
+		Database int
+	}
+
+	Session struct {
+		Prefix string
+		Name   string
+		Expire int
+	}
+
+	Cookie struct {
+		Name     string
+		MaxAge   int
+		Secure   bool
+		HTTPOnly bool
+	}
+
+	Logger struct {
+		Development       bool
+		DisableCaller     bool
+		DisableStacktrace bool
+		Encoding          string
+		Level             string
 	}
 )
 

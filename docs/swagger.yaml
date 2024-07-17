@@ -1,0 +1,194 @@
+basePath: /api/v1
+definitions:
+  instagram-clone_com_m_internal_models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        maxLength: 32
+        type: string
+      id:
+        type: string
+      last_name:
+        maxLength: 32
+        type: string
+      password:
+        minLength: 8
+        type: string
+      updated_at:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    type: object
+  instagram-clone_com_m_pkg_httpErrors.RestError:
+    properties:
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact:
+    name: Trung Hoang
+  description: Instagram Clone REST API
+  title: Instagram Clone REST API
+  version: "1.0"
+paths:
+  /auth/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user account and remove cached data
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_pkg_httpErrors.RestError'
+      summary: Delete user account
+      tags:
+      - Auth
+    get:
+      consumes:
+      - application/json
+      description: get user by ID
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_internal_models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_pkg_httpErrors.RestError'
+      summary: get user by ID
+      tags:
+      - Auth
+    put:
+      consumes:
+      - application/json
+      description: update existing user
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_internal_models.User'
+      summary: Update user
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: login user, returns user with token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_internal_models.User'
+      summary: Login user
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: logout user removing session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Logout user
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Get the current logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_internal_models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_pkg_httpErrors.RestError'
+      summary: Get the current logged in user
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: register new user, returns user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_internal_models.User'
+      summary: Register new user
+      tags:
+      - Auth
+  /auth/token:
+    get:
+      consumes:
+      - application/json
+      description: Get CSRF token, required auth session cookie
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/instagram-clone_com_m_pkg_httpErrors.RestError'
+      summary: Get CSRF token
+      tags:
+      - Auth
+swagger: "2.0"
