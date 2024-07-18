@@ -81,7 +81,7 @@ func (h *authHandler) Register() echo.HandlerFunc {
 func (h *authHandler) Login() echo.HandlerFunc {
 	type Login struct {
 		Email    string `json:"email" db:"email" validate:"required,email"`
-		Password string `json:"password" db:"password" validate:"required, gte=8"`
+		Password string `json:"password" db:"password" validate:"required,gte=8"`
 	}
 
 	return func(c echo.Context) error {

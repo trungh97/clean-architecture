@@ -48,10 +48,7 @@ func (s *sessionRepository) CreateSession(ctx context.Context, session *models.S
 }
 
 func (s *sessionRepository) GetSessionByID(ctx context.Context, sessionID string) (*models.Session, error) {
-
-	sessionKey := s.createKey(sessionID)
-
-	sessionBytes, err := s.redisClient.Get(ctx, sessionKey).Bytes()
+	sessionBytes, err := s.redisClient.Get(ctx, sessionID).Bytes()
 	if err != nil {
 		return nil, err
 	}
@@ -72,5 +69,5 @@ func (s *sessionRepository) DeleteSessionByID(ctx context.Context, sessionID str
 }
 
 func (s *sessionRepository) createKey(sessionID string) string {
-	return fmt.Sprintf("%s: %s", s.basePrefix, sessionID)
+	return fmt.Sprintf("%s:%s", s.basePrefix, sessionID)
 }

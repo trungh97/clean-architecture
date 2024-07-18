@@ -36,7 +36,7 @@ func NewAuthUsecase(authRepository auth.AuthRepository, redisRepository auth.Red
 }
 
 func (u *authUsecase) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
-	user, err := u.authRepository.GetUserByID(ctx, user.ID)
+	foundUser, err := u.authRepository.FindUserByEmail(ctx, user)
 
 	if err != nil {
 		// If the user is not found, return an error
@@ -45,18 +45,20 @@ func (u *authUsecase) Login(ctx context.Context, user *models.User) (*models.Use
 
 	// Check if the provided password is correct
 	// Compare the hashed password in the database with the provided password
-	if err := user.ComparePassword(user.Password); err != nil {
+	if err := foundUser.ComparePassword(user.Password); err != nil {
 		// If the passwords do not match, return an error
 		return nil, httpErrors.NewUnauthorizedError(err)
 	}
 
-	token, err := utils.GenerateJWTToken(user, u.cfg)
+	token, err := utils.GenerateJWTToken(foundUser, u.cfg)
 	if err != nil {
 		return nil, httpErrors.NewInternalServerError(err)
 	}
 
+	foundUser.SantinizePassword()
+
 	userWithToken := &models.UserWithToken{
-		User:  user,
+		User:  foundUser,
 		Token: token,
 	}
 
@@ -123,6 +125,7 @@ func (u *authUsecase) GetUserByID(ctx context.Context, userID uuid.UUID) (*model
 	}
 
 	if cachedUser != nil {
+		cachedUser.SantinizePassword()
 		return cachedUser, nil
 	}
 
@@ -131,11 +134,11 @@ func (u *authUsecase) GetUserByID(ctx context.Context, userID uuid.UUID) (*model
 		return nil, err
 	}
 
+	user.SantinizePassword()
+
 	if err := u.redisRepository.SetUserCtx(ctx, userKey, cacheDuration, user); err != nil {
 		u.logger.Errorf("AuthUsecase.GetUserByID.SetUserCtx: %s", err)
 	}
-
-	user.SantinizePassword()
 
 	return user, nil
 }

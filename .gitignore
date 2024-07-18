@@ -17,8 +17,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+*.toml
 # Go workspace file
 go.work
 go.work.sum
 
 config.yaml
+
+tmp
